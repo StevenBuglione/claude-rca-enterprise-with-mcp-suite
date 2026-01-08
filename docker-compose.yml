@@ -1,0 +1,139 @@
+services:
+  rca-api:
+    build: .
+    container_name: claude-rca-api
+    env_file: .env
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - ./:/workspace
+      - ~/.aws:/home/app/.aws:ro
+    working_dir: /workspace
+    restart: unless-stopped
+    depends_on:
+      jenkins-mcp:
+        condition: service_healthy
+      bitbucket-mcp:
+        condition: service_healthy
+      confluence-mcp:
+        condition: service_healthy
+      sourcebot-mcp:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health/ready"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+
+  jenkins-mcp:
+    build:
+      context: ./services
+      dockerfile: jenkins-mcp/Dockerfile
+    container_name: jenkins-mcp
+    env_file: .env
+    ports:
+      - "18080:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/ready"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+
+  bitbucket-mcp:
+    build:
+      context: ./services
+      dockerfile: bitbucket-mcp/Dockerfile
+    container_name: bitbucket-mcp
+    env_file: .env
+    ports:
+      - "18081:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/ready"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+
+  confluence-mcp:
+    build:
+      context: ./services
+      dockerfile: confluence-mcp/Dockerfile
+    container_name: confluence-mcp
+    env_file: .env
+    ports:
+      - "18082:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/ready"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+
+  sourcebot-mcp:
+    build:
+      context: ./services
+      dockerfile: sourcebot-mcp/Dockerfile
+    container_name: sourcebot-mcp
+    env_file: .env
+    ports:
+      - "18083:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health/ready"]
+      interval: 15s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16.11
+    container_name: rca-postgres
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rca}
+      POSTGRES_USER: ${POSTGRES_USER:-rca}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rca}
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rca} -d ${POSTGRES_DB:-rca}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Optional: local observability stack (enable with --profile obs)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.143.1
+    profiles: ["obs"]
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"  # OTLP gRPC
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    profiles: ["obs"]
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: ["obs"]
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

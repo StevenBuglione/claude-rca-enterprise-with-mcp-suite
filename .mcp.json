@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "jenkins": {
+      "type": "http",
+      "url": "http://jenkins-mcp:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCP_AUTH_TOKEN}"
+      }
+    },
+    "bitbucket": {
+      "type": "http",
+      "url": "http://bitbucket-mcp:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCP_AUTH_TOKEN}"
+      }
+    },
+    "confluence": {
+      "type": "http",
+      "url": "http://confluence-mcp:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCP_AUTH_TOKEN}"
+      }
+    },
+    "sourcebot": {
+      "type": "http",
+      "url": "http://sourcebot-mcp:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer ${MCP_AUTH_TOKEN}"
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "claude-rca-api"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["rca-api:8000"]
+
+- job_name: "jenkins-mcp"
+  metrics_path: /metrics
+  static_configs:
+    - targets: ["jenkins-mcp:8080"]
+
+- job_name: "bitbucket-mcp"
+  metrics_path: /metrics
+  static_configs:
+    - targets: ["bitbucket-mcp:8080"]
+
+- job_name: "confluence-mcp"
+  metrics_path: /metrics
+  static_configs:
+    - targets: ["confluence-mcp:8080"]

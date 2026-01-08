@@ -1,0 +1,37 @@
+# Tool Inventory
+
+## Jenkins MCP
+- jenkins_get_job(job_full_name, tree?, depth?)
+- jenkins_get_build(job_full_name, build_number, tree?, depth?)
+- jenkins_get_console_chunk(job_full_name, build_number, start=0)
+- jenkins_get_job_config_xml(job_full_name)
+- jenkins_get_test_report(job_full_name, build_number)
+- jenkins_wfapi_describe(job_full_name, build_number, full_stages=false)
+- jenkins_wfapi_changesets(job_full_name, build_number)
+- jenkins_wfapi_artifacts(job_full_name, build_number)
+
+## Bitbucket MCP (Data Center)
+- bitbucket_get_repo(project_key, repo_slug)
+- bitbucket_list_commits(project_key, repo_slug, limit=50, start=0, since?, until?)
+- bitbucket_get_commit(project_key, repo_slug, commit_id)
+- bitbucket_get_commit_diff(project_key, repo_slug, commit_id, limit=1000)
+- bitbucket_list_pull_requests(project_key, repo_slug, state=OPEN, limit=50, start=0)
+- bitbucket_get_pull_request(project_key, repo_slug, pr_id)
+- bitbucket_get_pull_request_commits(project_key, repo_slug, pr_id, limit=100, start=0)
+- bitbucket_get_pull_request_diff(project_key, repo_slug, pr_id, context_lines=3)
+- bitbucket_get_file_raw(project_key, repo_slug, file_path, at?)
+- bitbucket_list_branches(project_key, repo_slug, limit=50, start=0, filter_text?)
+
+## Confluence MCP (Data Center)
+- confluence_get_content(content_id, expand=...)
+- confluence_get_space(space_key, expand=...)
+- confluence_list_content(space_key?, title?, type=page, limit=25, start=0, expand=...)
+- confluence_search_content_cql(cql, limit=25, start=0, expand=...)
+- confluence_search_cql(cql, limit=25, start=0, expand=...)
+- confluence_get_children(content_id, type=page, limit=25, start=0)
+- confluence_list_attachments(content_id, limit=25, start=0, expand=...)
+
+## Sourcebot MCP (Mock)
+- search_code(query, filterByRepoIds?, filterByLanguages?, caseSensitive?, includeCodeSnippets?, maxTokens?)
+- list_repos()
+- get_file_source(fileName, repoId)

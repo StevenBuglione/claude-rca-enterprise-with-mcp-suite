@@ -1,0 +1,38 @@
+{
+  "repos": [
+    {
+      "id": "repo-jenkins",
+      "name": "build-pipeline",
+      "url": "https://git.example.com/devops/build-pipeline",
+      "default_branch": "main",
+      "languages": ["Groovy", "Shell"]
+    },
+    {
+      "id": "repo-app",
+      "name": "payments-service",
+      "url": "https://git.example.com/app/payments-service",
+      "default_branch": "main",
+      "languages": ["Python", "Dockerfile"]
+    }
+  ],
+  "files": [
+    {
+      "repo_id": "repo-jenkins",
+      "file_name": "Jenkinsfile",
+      "language": "Groovy",
+      "content": "pipeline {\n  agent any\n  stages {\n    stage('Build') {\n      steps {\n        sh 'docker login registry.example.com -u $REGISTRY_USER -p $REGISTRY_TOKEN'\n      }\n    }\n  }\n}\n"
+    },
+    {
+      "repo_id": "repo-app",
+      "file_name": "Dockerfile",
+      "language": "Dockerfile",
+      "content": "FROM python:3.12-slim\nWORKDIR /app\nCOPY . /app\nRUN pip install -r requirements.txt\nCMD [\"python\", \"-m\", \"uvicorn\", \"app.main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]\n"
+    },
+    {
+      "repo_id": "repo-app",
+      "file_name": "build.gradle",
+      "language": "Groovy",
+      "content": "tasks.withType(Test) {\n  maxHeapSize = '512m'\n}\n// Common CI failure: java.lang.OutOfMemoryError: Java heap space\n"
+    }
+  ]
+}
